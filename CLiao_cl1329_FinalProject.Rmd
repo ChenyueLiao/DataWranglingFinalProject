@@ -1,0 +1,473 @@
+---
+title: "Final Project"
+author: "ChenyueLiao"
+date: "5/2/2020"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+
+```{r load-packages, include=FALSE}
+library(tidyverse)
+library(rvest)
+library(ggplot2)
+library(janitor)
+library(dplyr)
+library(magrittr)
+library(knitr)
+```
+
+Part 1. The Trend of Populer Games.
+
+In this part, I collect data from "https://steamcharts.com/". There are some basic data of the most popular Steam games on the website.The data on this website is not very comprehensive, so the data can only show the game player's situation
+
+I planned to use data from "steamspy.com" and "steamdb.info" which can provide more diverse data. However, I found that I can not use "read_html()" to collect these 2 websites' data. The requests were refused by them. 
+Therefore, some interesting research can not be shown in this project. I choose data from github as substite.
+
+
+Collect the recent 2 years' data of Counter-Strike: Global Offensive.
+
+There are tables on the website which contain all the data, so I use "html_nodes("table")" and "html_table(fill = TRUE)" to collect them.
+The data collected from the website is the number of average players and peak players in the past 94 months.
+I want to get the recent 2 years' data, so I just intercepted data from row 2 to row 25.
+
+Another question is that the timeline of the data is from near to far, but I want it to be from far to near.
+To handle this, I added a column which contains its row number. And then I sorted the dataframe in descending order by the row number. After that I deleted this row number column. And I got the 2-year game players' trend dataframe I wanted.
+```{r, echo=TRUE}
+csgo_data <- "https://steamcharts.com/app/730" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table(fill = TRUE) #collect data from steamcharts.com
+
+csgo2year <- csgo_data[[1]][2:25,] #get game player data in recent 2 years
+  
+csgo2year <- csgo2year %>%
+  mutate(Number = rownames(csgo2year)) #add row name column in dataframe
+
+csgo2year$Number <- as.numeric(csgo2year$Number) #change the value in row name column into numeric data
+
+csgo2year <- csgo2year %>%
+  arrange(desc(Number)) %>%
+  select(Month, `Avg. Players`, `Gain`, `% Gain`, `Peak Players`) #sort the dataframe in descending order by the row number
+
+head(csgo2year, 10)
+```
+
+Collect the recent 2 years' data of Dota2.
+The collecting method is the same.
+```{r, echo=FALSE}
+dota2_data <- "https://steamcharts.com/app/570" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table(fill = TRUE) #collect data from steamcharts.com
+
+
+dota22year <- dota2_data[[1]][2:25,] #get game player data in recent 2 years
+  
+dota22year <- dota22year %>%
+  mutate(Number = rownames(dota22year)) #add row name column in dataframe
+
+dota22year$Number <- as.numeric(dota22year$Number) #change the value in row name column into numeric data
+
+dota22year <- dota22year %>%
+  arrange(desc(Number)) %>%
+  select(Month, `Avg. Players`, `Gain`, `% Gain`, `Peak Players`) #sort the dataframe in descending order by the row number
+
+head(dota22year, 10)
+```
+
+Collect the recent 2 years' data of Playerunknown's Battlegrounds.
+The collecting method is the same.
+```{r, echo=FALSE}
+pubg_data <- "https://steamcharts.com/app/578080" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table(fill = TRUE) #collect data from steamcharts.com
+
+
+pubg2year <- pubg_data[[1]][2:25,] #get game player data in recent 2 years
+  
+pubg2year <- pubg2year %>%
+  mutate(Number = rownames(pubg2year)) #add row name column in dataframe
+
+pubg2year$Number <- as.numeric(pubg2year$Number) #change the value in row name column into numeric data
+
+pubg2year <- pubg2year %>%
+  arrange(desc(Number)) %>%
+  select(Month, `Avg. Players`, `Gain`, `% Gain`, `Peak Players`) #sort the dataframe in descending order by the row number
+
+head(pubg2year, 10)
+```
+
+Collect the recent 2 years' data of Grand Theft Auto 5.
+The collecting method is the same.
+```{r, echo=FALSE}
+gta5_data <- "https://steamcharts.com/app/271590" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table(fill = TRUE) #collect data from steamcharts.com
+
+
+gta52year <- gta5_data[[1]][2:25,] #get game player data in recent 2 years
+  
+gta52year <- gta52year %>%
+  mutate(Number = rownames(gta52year)) #add row name column in dataframe
+
+gta52year$Number <- as.numeric(gta52year$Number) #change the value in row name column into numeric data
+
+gta52year <- gta52year %>%
+  arrange(desc(Number)) %>%
+  select(Month, `Avg. Players`, `Gain`, `% Gain`, `Peak Players`) #sort the dataframe in descending order by the row number
+
+head(gta52year, 10)
+```
+
+
+Collect the recent 2 years' data of Tom Clancy's Rainbow Six Siege.
+The collecting method is the same.
+```{r, echo=FALSE}
+rainbow6_data <- "https://steamcharts.com/app/359550" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table(fill = TRUE) #collect data from steamcharts.com
+
+
+rainbow62year <- rainbow6_data[[1]][2:25,] #get game player data in recent 2 years
+  
+rainbow62year <- rainbow62year %>%
+  mutate(Number = rownames(rainbow62year)) #add row name column in dataframe
+
+rainbow62year$Number <- as.numeric(rainbow62year$Number) #change the value in row name column into numeric data
+
+rainbow62year <- rainbow62year %>%
+  arrange(desc(Number)) %>%
+  select(Month, `Avg. Players`, `Gain`, `% Gain`, `Peak Players`) #sort the dataframe in descending order by the row number
+
+head(rainbow62year, 10)
+```
+
+Collect the recent 2 years' data of Ark: Survival Envolved.
+The collecting method is the same.
+```{r, echo=FALSE}
+ark_data <- "https://steamcharts.com/app/346110" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table(fill = TRUE) #collect data from steamcharts.com
+
+
+ark2year <- ark_data[[1]][2:25,] #get game player data in recent 2 years
+
+ark2year <- ark2year %>%
+  mutate(Number = rownames(ark2year)) #add row name column in dataframe
+
+ark2year$Number <- as.numeric(ark2year$Number) #change the value in row name column into numeric data
+
+ark2year <- ark2year %>%
+  arrange(desc(Number)) %>%
+  select(Month, `Avg. Players`, `Gain`, `% Gain`, `Peak Players`) #sort the dataframe in descending order by the row number
+
+head(ark2year, 10)
+```
+
+Here I needed a table which could show all the six games' average number of players in past 2 years.
+
+First, I used "select(Month, `Avg. Players`)" to get six subtable with column "Month" and "Avg. Players".
+And then, I changed the second column names of subtables with "gamename_avg" in order to do joins.
+Finally, I used "left_join" for 5 times to combine the 6 subtables and got the "games_avg_trend" table which would be used to draw the plot.
+```{r, echo=FALSE}
+csgo2year.avg <- csgo2year %>%
+  select(Month, `Avg. Players`)
+names(csgo2year.avg)[2] = "csgo_avg" #get subtables with column "Month" and "Avg. Players"
+
+dota22year.avg <- dota22year %>%
+  select(Month, `Avg. Players`)
+names(dota22year.avg)[2] = "dota2_avg" #get subtables with column "Month" and "Avg. Players"
+
+pubg2year.avg <- pubg2year %>%
+  select(Month, `Avg. Players`)
+names(pubg2year.avg)[2] = "pubg_avg" #get subtables with column "Month" and "Avg. Players"
+
+gta52year.avg <- gta52year %>%
+  select(Month, `Avg. Players`)
+names(gta52year.avg)[2] = "gta5_avg" #get subtables with column "Month" and "Avg. Players"
+
+rainbow62year.avg <- rainbow62year %>%
+  select(Month, `Avg. Players`)
+names(rainbow62year.avg)[2] = "rainbow6_avg" #get subtables with column "Month" and "Avg. Players"
+
+ark2year.avg <- ark2year %>%
+  select(Month, `Avg. Players`)
+names(ark2year.avg)[2] = "ark_avg" #get subtables with column "Month" and "Avg. Players"
+
+
+games_avg_trend <- left_join(csgo2year.avg, dota22year.avg, by = "Month") %>%
+  left_join(pubg2year.avg, by = "Month") %>%
+  left_join(gta52year.avg, by = "Month") %>%
+  left_join(rainbow62year.avg, by = "Month") %>%
+  left_join(ark2year.avg, by = "Month")  #left join the six subtables
+head(games_avg_trend, 10)
+```
+
+When I tried to draw the plot using "ggplot2" at first, I met a big problem: the order of x axis labels were arranged alphabetically by R. This was definitely not what I wanted.
+
+I thought the problem was caused by factor vectors, because the default level in factor vectors is alphabetical.
+So I specified the order of levels by "levels = unique(games_avg_trend$Month)".
+```{r, echo=TRUE}
+games_avg_trend$Month <- factor(games_avg_trend$Month, levels = unique(games_avg_trend$Month)) #specify the order of levels
+```
+
+
+After I specified the Month factor, I could successfully finish my plot.
+
+Since the values are discrete, I used "geom_point(aes(y = csgo_avg)) + geom_line(aes(y = csgo_avg, group = 1, color = "CS:GO"))" to draw a line chart.
+
+In addition, I used "ggtitle" to add a title, and used "xlab" and "ylab" to add labels on both axes.
+
+Besides, I had to use "scale_x_discrete(labels = abbreviate) +theme(axis.text = element_text(angle = 90))" to adjust the angle of the axis scale because there wasn't enough space for the characters.
+
+At last, the plot, "The Average Number of Players' Trends in the Past Two Years" is shown here.
+
+From the plot we can discover that CS:GO, DOTA2 and PUBG are far more popular than the other 3 games.
+
+What is striking is that the players of PUBG is keeping decreasing since May, 2018. The game lost more than two thirds of players in the recent 2 years. The phenomenon is obviously caused by the bad operating strategy of its developer, Bluehole, and another reason is that there are a lot of cheaters in the game which made players having bad game experience.
+
+In contrast, the average players of CS:GO is keeping increasing. The number of players in April 2020 is 3 times of the number in May 2018.
+
+Another popular game, Dota 2 has stable performance. The number is around 500k in past 2 years. During March 2019 to August 2019, the game once became the most popular one. I believe it is because the "Autochess" mode which attracted a lot of new players.
+
+Since January 2020, the numbers of players of all games except PUBG have increased significantly. I think this is caused by the COVID-19 quarantine. People have to stay at home, and playing video games is an excellent kind of entertainment.
+
+```{r, echo=TRUE}
+average_plot <- ggplot(data = games_avg_trend, aes(x = Month)) + 
+  geom_point(aes(y = csgo_avg)) +
+  geom_line(aes(y = csgo_avg, group = 1, color = "CS:GO")) + #draw line chart using discrete variables
+  geom_point(aes(y = dota2_avg)) +
+  geom_line(aes(y = dota2_avg, group = 1, color = "DOTA 2")) +
+  geom_point(aes(y = pubg_avg)) +
+  geom_line(aes(y = pubg_avg, group = 1, color = "PUBG")) +
+  geom_point(aes(y = gta5_avg)) +
+  geom_line(aes(y = gta5_avg, group = 1, color = "GTA 5")) +
+  geom_point(aes(y = rainbow6_avg)) +
+  geom_line(aes(y = rainbow6_avg, group = 1, color = "RAINBOW 6")) +
+  geom_point(aes(y = ark_avg)) +
+  geom_line(aes(y = ark_avg, group = 1, color = "ARK")) +
+  ggtitle("The Average Number of Players' Trends in the Past Two Years") + #add a title to the plot
+  xlab("Time") + #add a label to x axis
+  ylab("Number of Players") + #add a label to y axis
+  scale_color_discrete(name = "Games") + #specify the legend of the plot
+  scale_x_discrete(labels = abbreviate) +
+  theme(axis.text = element_text(angle = 90)) #adjust the angle of the axis scale
+
+average_plot
+```
+
+For this part, I needed a table which could show all the six games' peak number of players in past 2 years.
+
+First, I used "select(Month, `Peak Players`)" to get six subtable with column "Month" and "Peak Players".
+And then, I changed the second column names of subtables with "gamename_peak" in order to do joins.
+Finally, I used "left_join" for 5 times to combine the 6 subtables and got the "games_peak_trend" table which would be used to draw the plot.
+
+And of course I used "levels = unique(games_avg_trend$Month)" again to specify the levels' order in the factor vectors.
+```{r, echo=FALSE}
+csgo2year.peak <- csgo2year %>%
+  select(Month, `Peak Players`)
+names(csgo2year.peak)[2] = "csgo_peak" #get subtables with column "Month" and "Peak Players"
+
+dota22year.peak <- dota22year %>%
+  select(Month, `Peak Players`)
+names(dota22year.peak)[2] = "dota2_peak" #get subtables with column "Month" and "Peak Players"
+
+pubg2year.peak <- pubg2year %>%
+  select(Month, `Peak Players`)
+names(pubg2year.peak)[2] = "pubg_peak" #get subtables with column "Month" and "Peak Players"
+
+gta52year.peak <- gta52year %>%
+  select(Month, `Peak Players`)
+names(gta52year.peak)[2] = "gta5_peak" #get subtables with column "Month" and "Peak Players"
+
+rainbow62year.peak <- rainbow62year %>%
+  select(Month, `Peak Players`)
+names(rainbow62year.peak)[2] = "rainbow6_peak" #get subtables with column "Month" and "Peak Players"
+
+ark2year.peak <- ark2year %>%
+  select(Month, `Peak Players`)
+names(ark2year.peak)[2] = "ark_peak" #get subtables with column "Month" and "Peak Players"
+
+
+games_peak_trend <- left_join(csgo2year.peak, dota22year.peak, by = "Month") %>%
+  left_join(pubg2year.peak, by = "Month") %>%
+  left_join(gta52year.peak, by = "Month") %>%
+  left_join(rainbow62year.peak, by = "Month") %>%
+  left_join(ark2year.peak, by = "Month") #left join the six subtables
+head(games_peak_trend, 10)
+
+
+games_peak_trend$Month <- factor(games_peak_trend$Month, levels = unique(games_peak_trend$Month)) #specify the order of levels
+```
+
+
+To draw "The Peak Number of Players' Trends in the Past Two Years" plot, I used the code which is similar to the average number plot. Including  "geom_point(aes(y = csgo_peak)) + geom_line(aes(y = csgo_avg, group = 1, color = "CS:GO"))" and "scale_x_discrete(labels = abbreviate) +theme(axis.text = element_text(angle = 90))".
+
+From the peak plot we can see the great popularity of PUBG before 2019. I went to search PUBG's peak number of players of all time. It is a huge number that you cannot imagine, 3,236,027. This number is bigger than the sum of all the other games' players.
+
+```{r, echo=FALSE}
+peak_plot <- ggplot(data = games_peak_trend, aes(x = Month)) + 
+  geom_point(aes(y = csgo_peak)) +
+  geom_line(aes(y = csgo_peak, group = 1, color = "CS:GO")) + #draw line chart using discrete variables
+  geom_point(aes(y = dota2_peak)) +
+  geom_line(aes(y = dota2_peak, group = 1, color = "DOTA 2")) +
+  geom_point(aes(y = pubg_peak)) +
+  geom_line(aes(y = pubg_peak, group = 1, color = "PUBG")) +
+  geom_point(aes(y = gta5_peak)) +
+  geom_line(aes(y = gta5_peak, group = 1, color = "GTA 5")) +
+  geom_point(aes(y = rainbow6_peak)) +
+  geom_line(aes(y = rainbow6_peak, group = 1, color = "RAINBOW 6")) +
+  geom_point(aes(y = ark_peak)) +
+  geom_line(aes(y = ark_peak, group = 1, color = "ARK")) +
+  ggtitle("The Peak Number of Players' Trends in the Past Two Years") + #add a title to the plot
+  xlab("Time") +
+  ylab("Number of Players") + #add a label to axes
+  scale_color_discrete(name = "Games") + #specify the legend of the plot
+  scale_x_discrete(labels = abbreviate) +
+  theme(axis.text = element_text(angle = 90)) #adjust the angle of the axis scale
+
+peak_plot
+```
+
+
+Part 2
+
+Here are the steam history statistics from github.
+The data comes courtesy of Liza Wood via Steam Spy.
+There is time played, ownership, release date, publishing information, and for some a metascore.
+And the average and median playtime is over the last two weeks when the data was collected, as such there are many many games where playtime is low or zero.
+When I analyzed the data, I remove all the 0 value and na value, so there might be some limitation.
+```{r, echo=FALSE}
+url <- "https://raw.githubusercontent.com/lizawood/apps-and-games/master/PC_Games/PCgames_2004_2018_raw.csv"
+
+github_steam <- url %>% 
+  read_csv() %>% 
+  janitor::clean_names() #collect csv data from github
+
+head(github_steam, 10)
+```
+
+And there some clean up.
+Using "as.numeric()" to change data type of "price", "playtime" and "metascore". And I deleted the extra characters in the dataframe.
+```{r, echo=FALSE}
+clean_steam_stats <- github_steam %>% 
+  mutate(price = as.numeric(price), #change data type into numeric data
+         score_rank = word(score_rank_userscore_metascore, 1), #change column names
+         average_playtime = word(playtime_median, 1),
+         median_playtime = word(playtime_median, 2),
+         median_playtime = str_remove(median_playtime, "\\("), #delete useless punctuation
+         median_playtime = str_remove(median_playtime, "\\)"),
+         average_playtime = 60 * as.numeric(str_sub(average_playtime, 1, 2)) + #change time data form
+           as.numeric(str_sub(average_playtime, 4, 5)),
+         median_playtime = 60 * as.numeric(str_sub(median_playtime, 1, 2)) +
+           as.numeric(str_sub(median_playtime, 4, 5)),
+         metascore = as.double(str_sub(score_rank_userscore_metascore, start = -4, end = -3))) %>% 
+  select(-score_rank_userscore_metascore, -score_rank, -playtime_median) %>% 
+  rename(publisher = publisher_s, developer = developer_s)
+
+head(clean_steam_stats, 10)
+```
+
+Then, I removed all the 0 value and NA value in the dataframe, in order to let it more convenient to do further research.
+```{r, echo=FALSE}
+steam_history_stats <- clean_steam_stats %>%
+  filter(average_playtime > 0) %>% #remove 0 value
+  filter(is.na(metascore) == FALSE) %>% #remove NA value
+  filter(is.na(developer) == FALSE)  
+
+head(steam_history_stats, 10)
+```
+
+
+I'm concentrating on the developer's statistics in this part.
+So, I use "group_by" and "summarise()" to get the games' average playtime and metascore from different developers. 
+```{r, echo=FALSE}
+developer_stats <- steam_history_stats %>%
+  group_by(developer) %>%
+  summarise(avg_playtime = mean(average_playtime), avg_metascore = mean(metascore)) #group data by developers and calculate every developers' average playtime and metascore
+
+head(developer_stats, 10)
+```
+
+For average playtime and score, I decided to analyze them seperately because they are different statisitcal indicators.
+
+I divided the developer statistics dataframe into 2 dataframes, and ordered them in descending sort.
+```{r, echo=FALSE}
+developer_playtime <- developer_stats %>%
+  select(developer, avg_playtime) %>%
+  arrange(desc(avg_playtime)) #ordered playtime table in descending sort
+```
+
+
+```{r, echo=FALSE}
+developer_score <- developer_stats %>%
+  select(developer, avg_metascore) %>%
+  arrange(desc(avg_metascore)) #ordered metascore table in descending sort
+```
+
+From both 2 dataframes, I chose the top 10 developers.
+From different perspectives, we got different answers about top developers.
+
+In the playtime table, the top five developers are Blazing Griffin, Clifftop Games, KOEI TECMO GAMES CO., LTD., Gone North Games and Square Enix.
+In the metascore table, the top five developers are Rockstar North, Neko Climax Studios, Irrational Games, Virtual Programming (Linux), Rockstar Games and Larian Studios.
+
+For myself, I prefer the answer from metascore table, because those developers do have a lot of famous and popular games such as Divinity II, GTA 5, Red Dead Redemption II.
+
+And from the part 1 of this report, we can find that the game, GTA 5 developed by Rockstar Games and Rockstar North is still very popular now. However it is a game developed 7 years ago. Throughout the history of the game, this is very amazing.
+```{r, echo=FALSE}
+top_developer_playtime <- developer_playtime[1:10,] #get the top 10 developers in playtime table
+top_developer_score <- developer_score[1:10,] #get the top 10 developers in score table
+
+top_developer_playtime
+top_developer_score
+```
+
+To make the data more intuitive, I drew 2 histgrams using the dataframes.
+Since it is numeric variable in column "avg_playtime" and "avg_metascore", I used "geom_bar(stat = "identity")".
+```{r, echo=FALSE}
+top_developer_playtime_plot <- ggplot(data = top_developer_playtime, aes(x = developer, y = avg_playtime)) +
+  geom_bar(stat = "identity") + #draw a histgram
+  scale_x_discrete(labels = abbreviate) + #change the labels into abbreviation
+  theme(axis.text = element_text(angle = 90)) + #adjust the angle of the axis scale
+  ggtitle("The Average Playtime of Different Developers' Games") + #add a title to the plot
+  xlab("Average Playtime") +
+  ylab("Developers' Names") #add labels to axes
+
+top_developer_playtime_plot
+```
+
+
+
+```{r, echo=FALSE}
+top_developer_score_plot <- ggplot(data = top_developer_score, aes(x = developer, y = avg_metascore)) +
+  geom_bar(stat = "identity") + #draw a histgram
+  scale_x_discrete(labels = abbreviate) + #change the labels into abbreviation
+  theme(axis.text = element_text(angle = 90)) + #adjust the angle of the axis scale
+  ggtitle("The Average Metascore of Different Developers' Games") + #add a title to the plot
+  xlab("Average Metascore") +
+  ylab("Developers' Names") #add labels to axes
+
+top_developer_score_plot
+```
+
+
+In this report, I did analysis about the most popular games in recent 2 years and top game developers.
+I have to admit that there may be some limitation in the answer I got. However, I think it is easy for people who are not so familiar with video games to understand the games and developers on STEAM.
+
+Moreover, I hope that one day, video games will be widely accepted by people of all ages without being unjustly biased.
+After all, it is a good entertainment.
+
+
+
+
+
+
+
+
